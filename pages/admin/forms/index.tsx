@@ -19,8 +19,6 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useWindowSize } from '../../../components/use.window.size'
 import { FormPagerFragment } from '../../../graphql/fragment/form.pager.fragment'
-import { useFormDeleteMutation } from '../../../graphql/mutation/form.delete.mutation'
-import { useFormPagerQuery } from '../../../graphql/query/form.pager.query'
 
 const Index: NextPage = () => {
   const { t } = useTranslation()
@@ -29,39 +27,47 @@ const Index: NextPage = () => {
     pageSize: 25,
   })
   const [entries, setEntries] = useState<FormPagerFragment[]>()
-  const { loading, refetch, error } = useFormPagerQuery({
-    variables: {
-      limit: pagination.pageSize,
-      start: Math.max(0, pagination.current - 1) * pagination.pageSize || 0,
-    },
-    onCompleted: ({ pager }) => {
-      setPagination({
-        ...pagination,
-        total: pager.total,
-      })
-      setEntries(pager.entries)
-    },
-  })
-  const [executeDelete] = useFormDeleteMutation()
+
+  // //TODO: extract forms from ETH
+  const {data} = JSON.parse(`{"data":{"pager":{"entries":[],"total":0,"limit":25,"start":0,"__typename":"FormPager"}}}`);
+  console.log('form:data=', data);
+   const loading = false;
+   const error = null;
+  // const { loading, refetch, error } = useFormPagerQuery({
+  //   variables: {
+  //     limit: pagination.pageSize,
+  //     start: Math.max(0, pagination.current - 1) * pagination.pageSize || 0,
+  //   },
+  //   onCompleted: ({ pager }) => {
+  //     setPagination({
+  //       ...pagination,
+  //       total: pager.total,
+  //     })
+  //     setEntries(pager.entries)
+  //   },
+  // })
+  // const [executeDelete] = useFormDeleteMutation()
 
   const deleteForm = async (id: string) => {
-    try {
-      await executeDelete({
-        variables: {
-          id,
-        },
-      })
-      const next = entries.filter((entry) => entry.id !== id)
-      if (next.length === 0) {
-        setPagination({ ...pagination, current: 1 })
-      } else {
-        setEntries(next)
-      }
+    // try {
+    //   await executeDelete({
+    //     variables: {
+    //       id,
+    //     },
+    //   })
+    //   const next = entries.filter((entry) => entry.id !== id)
+    //   if (next.length === 0) {
+    //     setPagination({ ...pagination, current: 1 })
+    //   } else {
+    //     setEntries(next)
+    //   }
 
-      await message.success(t('form:deleted'))
-    } catch (e) {
-      await message.error(t('form:deleteError'))
-    }
+    //   await message.success(t('form:deleted'))
+    // } catch (e) {
+    //   await message.error(t('form:deleteError'))
+    // }
+    //TODO: just delete this function
+    alert('delete')
   }
 
   const columns: ColumnsType<FormPagerFragment> = [
@@ -192,11 +198,13 @@ const Index: NextPage = () => {
         pagination={pagination}
         onChange={async (next) => {
           setPagination(next)
-          await refetch()
+          // await refetch()
+          //TODO: implements this feature
+          alert('ReFetch');
         }}
       />
     </Structure>
   )
 }
 
-export default withAuth(Index, ['admin'])
+export default withAuth(Index)

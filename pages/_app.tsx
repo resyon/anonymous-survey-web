@@ -2,6 +2,7 @@ import { ApolloProvider } from '@apollo/client'
 import 'antd/dist/antd.css'
 import 'assets/global.scss'
 import 'assets/variables.scss'
+import { EthProvider } from 'contexts/EthContext'
 import debug from 'debug'
 import 'i18n'
 import getConfig from 'next/config'
@@ -38,14 +39,16 @@ const App: AppType = ({ Component, pageProps }) => {
   })
 
   return (
+    <EthProvider>
     <ApolloProvider client={getClient()}>
       <Head>
-        <title>OhMyForm</title>
+        <title>Anonymous Survey</title>
         <meta name="theme-color" content={'#4182e4'} />
       </Head>
       <Component {...pageProps} />
     </ApolloProvider>
-  )
+    </EthProvider>
+  )  
 }
 
 App.getInitialProps = (): AppInitialProps => ({

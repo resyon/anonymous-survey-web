@@ -1,12 +1,13 @@
 import { CaretDownOutlined, UserOutlined } from '@ant-design/icons'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons/lib'
 import { Alert, Dropdown, Layout, Menu, PageHeader, Select, Space, Spin, Tag } from 'antd'
+import { useEth } from 'contexts/EthContext'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { CSSProperties, FunctionComponent } from 'react'
 import GitHubButton from 'react-github-button'
 import { useTranslation } from 'react-i18next'
-import { useMeQuery } from '../graphql/query/me.query'
+// import { useMeQuery } from '../graphql/query/me.query'
 import { languages } from '../i18n'
 import { sideMenu, SideMenuElement } from './sidemenu'
 import { useWindowSize } from './use.window.size'
@@ -43,7 +44,10 @@ export const Structure: FunctionComponent<Props> = (props) => {
   const [selected, setSelected] = React.useState<string[]>()
   const [sidebar, setSidebar] = React.useState(size.width < 700)
   const router = useRouter()
-  const user = useMeQuery()
+  // const user = useMeQuery()
+  // const user = {data:{me:{id:"GVkRjB",roles:["user","admin","superuser"],username:"admin",__typename:"Profile"}}, loading:false};
+  const eth = useEth();
+  const user = {data:{me:{address:eth&&eth.state&&eth.state.accounts ? eth.state.accounts[0] : 'FAIL TO GET ETH_CTX'}}}
 
   React.useEffect(() => {
     if (sidebar !== size.width < 700) {
@@ -67,17 +71,6 @@ export const Structure: FunctionComponent<Props> = (props) => {
 
   const buildMenu = (data: SideMenuElement[]): JSX.Element[] => {
     return data
-      .filter((element) => {
-        if (!element.role) {
-          return true
-        }
-
-        if (user.loading) {
-          return false
-        }
-
-        return user.data?.me.roles.includes(element.role)
-      })
       .map(
         (element): JSX.Element => {
           if (element.items && element.items.length > 0) {
@@ -176,8 +169,8 @@ export const Structure: FunctionComponent<Props> = (props) => {
           }}>
             <img
               height={40}
-              src={require('../assets/images/logo_white.png?resize&size=256')}
-              alt={'OhMyForm'}
+              src={require('../assets/images/logo.png?resize&size=256')}
+              alt={'Anonymous-Survey'}
             />
           </div>
         </Space>
@@ -185,7 +178,7 @@ export const Structure: FunctionComponent<Props> = (props) => {
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item key={'profile'} onClick={() => router.push('/admin/profile')}>Profile</Menu.Item>
+                {/* <Menu.Item key={'profile'} onClick={() => router.push('/admin/profile')}>Profile</Menu.Item> */}
                 <Menu.Divider key={'d1'} />
                 <Menu.Item key={'logout'} onClick={signOut}>Logout</Menu.Item>
               </Menu>
@@ -200,7 +193,7 @@ export const Structure: FunctionComponent<Props> = (props) => {
                 display: 'inline-flex',
               }}
             >
-              <div>Hi {user.data && user.data.me.username},</div>
+              <div>Hi {user?.data?.me?.address||"UNEXPECTED ERROR"},</div>
               <UserOutlined style={{ fontSize: 24 }} />
               <CaretDownOutlined />
             </Space>
@@ -237,7 +230,7 @@ export const Structure: FunctionComponent<Props> = (props) => {
             {buildMenu(sideMenu)}
           </Menu>
           <Menu mode="inline" selectable={false}>
-            <Menu.Item className={'language-selector'} key={'language-selector'}>
+             <Menu.Item className={'language-selector'} key={'language-selector'}>
               <Select
                 bordered={false}
                 value={i18n.language.replace(/-.*/, '')}
@@ -252,9 +245,9 @@ export const Structure: FunctionComponent<Props> = (props) => {
                   </Select.Option>
                 ))}
               </Select>
-            </Menu.Item>
+            </Menu.Item> 
             <Menu.Item style={{ display: 'flex', alignItems: 'center' }} key={'github'}>
-              <GitHubButton type="stargazers" namespace="ohmyform" repo="ohmyform" />
+              <GitHubButton type="stargazers" namespace="resyon" repo="anonymous-survey" />
             </Menu.Item>
             <Menu.Item key={'version'}>
               Version: <Tag color="gold">{process.env.version}</Tag>

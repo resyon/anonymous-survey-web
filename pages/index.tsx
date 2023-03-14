@@ -1,4 +1,4 @@
-import { /*Alert,*/ Layout } from 'antd'
+import { Alert, Layout } from 'antd'
 import { AuthFooter } from 'components/auth/footer'
 import { GetStaticProps, NextPage } from 'next'
 import getConfig from 'next/config'
@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LoadingPage } from '../components/loading.page'
 import { Omf } from '../components/omf'
-import { useStatusQuery } from '../graphql/query/status.query'
 import { NextConfigType } from '../next.config.type'
 
 const { publicRuntimeConfig } = getConfig() as NextConfigType
@@ -18,7 +17,12 @@ const Index: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(
     publicRuntimeConfig.spa || (process.browser && router.pathname !== window.location.pathname)
   )
-  const status = useStatusQuery()
+  const {data:{status}} = {data:{
+    status:{
+      version:"dev",
+      __typename:"Version",
+      error: null,
+    }}}
 
   useEffect(() => {
     if (router.pathname !== window.location.pathname) {
@@ -69,19 +73,19 @@ const Index: NextPage = () => {
         }}
       >
         <img
-          alt={'OhMyForm'}
-          src={require('../assets/images/logo_white.png?resize&size=512')}
-          width={1608 / 4}
-          height={530 / 4}
+          alt={'Anonymous-Survey'}
+          src={require('../assets/images/logo.png?resize&size=512')}
+          width={1608 / 3}
+          height={530 / 2}
         />
       </div>
 
-      {/* {status.error && (
+      {status.error && (
         <Alert
           message={`There is an error with your API connection: ${status.error.message}`}
           style={{ marginBottom: 40, marginLeft: 16, marginRight: 16 }}
         />
-      )} */}
+      )}
       <AuthFooter />
     </Layout>
   )

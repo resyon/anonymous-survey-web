@@ -1,70 +1,70 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useMeQuery } from '../graphql/query/me.query'
 import { LoadingPage } from './loading.page'
+import { useEth } from 'contexts/EthContext'
+
 
 export const clearAuth = (): void => {
-  localStorage.removeItem('access')
-  localStorage.removeItem('refresh')
+  localStorage.removeItem('address')
 }
 
-export const setAuth = (access: string, refresh: string): void => {
-  localStorage.setItem('access', access)
-  localStorage.setItem('refresh', refresh)
+export const setAuth = (address: string): void => {
+  localStorage.setItem('address', address)
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-explicit-any
-export const withAuth = (Component: any, roles: string[] = [], optional?: boolean): React.FC => {
+export const withAuth = (Component: any, optional?: boolean): React.FC => {
   // eslint-disable-next-line react/display-name
   return (props) => {
     const { t } = useTranslation()
     const router = useRouter()
     const [access, setAccess] = useState(false)
-    const { loading, data, error } = useMeQuery()
+    // const { loading, data, error } = {error:null, data:{me:{id:"GVkRjB",roles:["user","admin","superuser"],username:"admin",__typename:"Profile"}}, loading:false};
+    const {state} = useEth();
+    console.log("state: ", state);
 
     useEffect(() => {
-      if (roles.length === 0) {
+      // console.info("roles: ", roles);
+
+      if(state && state.accounts && state.accounts[0] === localStorage.getItem('address')) {
         setAccess(true)
         return
       }
       setAccess(false)
-      if (!error) {
-        return
-      }
 
       localStorage.clear()
       const path = router.asPath || router.pathname
       localStorage.setItem('redirect', path)
 
       router.push('/login').catch((e: Error) => console.error('failed to redirect to login', e))
-    }, [error])
+    }, [state])
 
-    useEffect(() => {
-      if (!data || roles.length === 0) {
-        setAccess(true)
-        return
-      }
+    // useEffect(() => {
+    //   if (!data || roles.length === 0) {
+    //     setAccess(true)
+    //     return
+    //   }
 
-      const next = roles.map((role) => data.me.roles.includes(role)).filter((p) => p).length > 0
+    //   const next = roles.map((role) => data.me.roles.includes(role)).filter((p) => p).length > 0
 
-      setAccess(next)
+    //   setAccess(next)
 
-      if (!next) {
-        router.push('/').catch((e: Error) => console.error('failed to redirect to /', e))
-      }
-    }, [data])
+    //   if (!next) {
+    //     router.push('/').catch((e: Error) => console.error('failed to redirect to /', e))
+    //   }
+    // }, [data])
 
-    if (!optional) {
-      if (loading) {
-        return <LoadingPage message={t('loadingCredentials')} />
-      }
+    // if (!optional) {
+      // if (loading) {
+      //   return <LoadingPage message={t('loadingCredentials')} />
+      // }
 
-      if (!access) {
-        return <LoadingPage message={t('checkingCredentials')} />
-      }
-    }
+    //   if (!access) {
+    //     return <LoadingPage message={t('checkingCredentials')} />
+    //   }
+    // }
 
-    return <Component me={data && data.me} {...props} />
+    return <Component me={state.accounts && state.accounts[0]} {...props} />
   }
 }

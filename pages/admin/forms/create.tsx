@@ -128,4 +128,4 @@ const Create: NextPage = () => {
   )
 }
 
-export default withAuth(Create, ['admin'])
+export default withAuth(Create)

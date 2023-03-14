@@ -10,7 +10,7 @@ export interface SideMenuElement {
   group?: boolean
   href?: string
   icon?: JSX.Element
-  role?: 'superuser' | 'admin'
+  // role?: 'superuser' | 'admin'
 }
 
 export const sideMenu: SideMenuElement[] = [
@@ -20,17 +20,17 @@ export const sideMenu: SideMenuElement[] = [
     href: '/admin',
     icon: <HomeOutlined />,
   },
-  {
-    key: 'profile',
-    name: 'admin:profile',
-    href: '/admin/profile',
-    icon: <UserOutlined />,
-  },
+  // {
+  //   key: 'profile',
+  //   name: 'admin:profile',
+  //   href: '/admin/profile',
+  //   icon: <UserOutlined />,
+  // },
   {
     key: 'public',
     name: 'admin:forms',
     group: true,
-    role: 'admin',
+    // role: 'admin',
     items: [
       {
         key: 'forms',
@@ -40,18 +40,18 @@ export const sideMenu: SideMenuElement[] = [
       },
     ],
   },
-  {
-    key: 'administration',
-    name: 'admin:administration',
-    group: true,
-    role: 'superuser',
-    items: [
-      {
-        key: 'users',
-        name: 'admin:users',
-        href: '/admin/users',
-        icon: <TeamOutlined />,
-      },
-    ],
-  },
+  // {
+  //   key: 'administration',
+  //   name: 'admin:administration',
+  //   group: true,
+  //   role: 'superuser',
+  //   items: [
+  //     {
+  //       key: 'users',
+  //       name: 'admin:users',
+  //       href: '/admin/users',
+  //       icon: <TeamOutlined />,
+  //     },
+  //   ],
+  // },
 ]

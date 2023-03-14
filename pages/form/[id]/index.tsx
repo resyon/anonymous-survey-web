@@ -7,18 +7,24 @@ import { useTranslation } from 'react-i18next'
 import { CardLayout } from '../../../components/form/layouts/card'
 import { SliderLayout } from '../../../components/form/layouts/slider'
 import { useSubmission } from '../../../components/use.submission'
-import { useFormPublicQuery } from '../../../graphql/query/form.public.query'
+// import { useFormPublicQuery } from '../../../graphql/query/form.public.query'
 
 const Index: NextPage = () => {
   const { t, i18n } = useTranslation()
   const router = useRouter()
   const submission = useSubmission(router.query.id as string)
 
-  const { loading, data, error } = useFormPublicQuery({
-    variables: {
-      id: router.query.id as string,
-    },
-  })
+  //TODO: extract forms from ETH
+  const { data } = JSON.parse(`{"data":{"pager":{"entries":[],"total":0,"limit":25,"start":0,"__typename":"FormPager"}}}`);
+  console.log('form:data=', data);
+  const loading = true;
+  const error = null;
+  
+  //   useFormPublicQuery({
+  //   variables: {
+  //     id: router.query.id as string,
+  //   },
+  // })
 
   useEffect(() => {
     // check form language to switch to!

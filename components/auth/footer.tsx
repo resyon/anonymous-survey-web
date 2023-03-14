@@ -1,26 +1,25 @@
-import { Button, Select } from 'antd'
+import { Button } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import GitHubButton from 'react-github-button'
 import { useTranslation } from 'react-i18next'
-import { useSettingsQuery } from '../../graphql/query/settings.query'
-import { languages } from '../../i18n'
 import { clearAuth, withAuth } from '../with.auth'
 import scss from './footer.module.scss'
 
 interface Props {
   me?: {
-    id: string
-    username: string
-    roles: string[]
+    // id: string
+    // username: string
+    // roles: string[]
+    address: string
   }
 }
 
 const AuthFooterInner: React.FC<Props> = (props) => {
   const { t, i18n } = useTranslation()
   const router = useRouter()
-  const { data, loading } = useSettingsQuery()
+  // const { data, loading } = useSettingsQuery()
 
   const logout = () => {
     clearAuth()
@@ -29,13 +28,14 @@ const AuthFooterInner: React.FC<Props> = (props) => {
 
   return (
     <footer className={scss.footer}>
-      {props.me
+      {console.log("props.me: ", props.me)}
+      {props.me && props.me.address
         ? [
           <span style={{ color: '#FFF' }} key={'user'}>
-              Hi, {props.me.username}
+              Hi, {props.me.address}
           </span>,
-          props.me.roles.includes('admin') && (
-            <Link key={'admin'} href={'/admin'}>
+          // props.me.roles.includes('admin') && (
+            (<Link key={'admin'} href={'/admin'}>
               <Button
                 type={'link'}
                 style={{
@@ -44,8 +44,8 @@ const AuthFooterInner: React.FC<Props> = (props) => {
               >
                 {t('admin')}
               </Button>
-            </Link>
-          ),
+            </Link>),
+          // ),
           <Link key={'profile'} href={'/admin/profile'}>
             <Button
               type={'link'}
@@ -78,65 +78,17 @@ const AuthFooterInner: React.FC<Props> = (props) => {
               {t('login')}
             </Button>
           </Link>,
-          !loading && !data?.disabledSignUp.value && (
-            <Link href={'/register'} key={'register'}>
-              <Button
-                type={'link'}
-                style={{
-                  color: '#FFF',
-                }}
-              >
-                {t('register')}
-              </Button>
-            </Link>
-          ),
         ]}
       <div style={{ flex: 1 }} />
-      <Select
-        bordered={false}
-        value={i18n.language.replace(/-.*/, '')}
-        onChange={(next) => i18n.changeLanguage(next)}
-        style={{
-          color: '#FFF',
-          paddingLeft: 18,
-        }}
-        suffixIcon={false}
-      >
-        {languages.map((language) => (
-          <Select.Option value={language} key={language}>
-            {t(`language:${language}`)}
-          </Select.Option>
-        ))}
-      </Select>
-      {!loading && !data?.hideContrib.value && (
+
+      
+      {/*!loading && !data?.hideContrib.value &&*/ (
         <>
           <GitHubButton type="stargazers" namespace="resyon" repo="anonymous-survey" />
-          {/* <Button
-            type={'link'}
-            target={'_blank'}
-            rel={'noreferrer'}
-            href={'https://www.ohmyform.com'}
-            style={{
-              color: '#FFF',
-            }}
-          >
-            OhMyForm
-          </Button> */}
-          {/* <Button
-            type={'link'}
-            target={'_blank'}
-            rel={'noreferrer'}
-            href={'https://lokalise.com/'}
-            style={{
-              color: '#FFF',
-            }}
-          >
-            translated with Lokalize
-          </Button> */}
         </>
       )}
     </footer>
   )
 }
 
-export const AuthFooter = withAuth(AuthFooterInner, [], true)
+export const AuthFooter = withAuth(AuthFooterInner)

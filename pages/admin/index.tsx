@@ -1,21 +1,29 @@
-import { useQuery } from '@apollo/client'
 import { Col, Row, Statistic } from 'antd'
 import Structure from 'components/structure'
 import { withAuth } from 'components/with.auth'
 import { NextPage } from 'next'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  ADMIN_STATISTIC_QUERY,
-  AdminStatisticQueryData,
-  AdminStatisticQueryVariables,
-} from '../../graphql/query/admin.statistic.query'
 
 const Index: NextPage = () => {
   const { t } = useTranslation()
-  const { data, loading } = useQuery<AdminStatisticQueryData, AdminStatisticQueryVariables>(
-    ADMIN_STATISTIC_QUERY
-  )
+  
+  //TODO: extract data from ETH
+  const {data, loading} = {"data":{
+    forms:{
+      total:0,
+      __typename:"FormStatistic"
+    },
+    submissions:{
+      total:0,
+      __typename:"SubmissionStatistic"
+    },
+    users:{
+      total:1,
+      __typename:"UserStatistic"
+    }},
+  loading: false};
+
 
   return (
     <Structure title={t('admin:home')} selected={'home'} loading={loading}>
@@ -39,4 +47,4 @@ const Index: NextPage = () => {
   )
 }
 
-export default withAuth(Index, ['admin'])
+export default withAuth(Index)

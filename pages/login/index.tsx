@@ -1,47 +1,40 @@
-import { useMutation } from '@apollo/client'
 import { Alert, Button, Form, Input, message } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
 import { AuthFooter } from 'components/auth/footer'
 import { AuthLayout } from 'components/auth/layout'
 import { setAuth } from 'components/with.auth'
-import {
-  LOGIN_MUTATION,
-  LoginMutationData,
-  LoginMutationVariables,
-} from 'graphql/mutation/login.mutation'
 import { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactMarkdown from 'react-markdown'
 import { Omf } from '../../components/omf'
-import { useSettingsQuery } from '../../graphql/query/settings.query'
-import scss from './index.module.scss'
-// import {EthProvider} from '../../contexts/EthContext/EthProvider'
+import {useEth} from '../../contexts/EthContext'
 
 const Index: NextPage = () => {
   const { t } = useTranslation()
-  const [form] = useForm()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [login] = useMutation<LoginMutationData, LoginMutationVariables>(LOGIN_MUTATION)
-  const { data } = useSettingsQuery()
+  console.log("useEth():", useEth());
+  const {state: {accounts}} = useEth();
+  let address:string = '';
+  if(accounts == undefined){
+    console.error('Invalid Login');
+  }else{
+    address = accounts[0];
+  }
 
-  const finish = async (data: LoginMutationVariables) => {
+  const finish = async (data /*: LoginMutationVariables*/) => {
     setLoading(true)
     try {
-      const result = await login({
-        variables: data,
-      })
+      console.log('data: LoginMutationVariable :', data);
 
-      setAuth(result.data.tokens.access, result.data.tokens.refresh)
+      // setAuth(result.data.tokens.access, result.data.tokens.refresh, address)
+      setAuth(address)
 
       await message.success(t('login:welcomeBack'))
 
       await router.push('/admin')
     } catch (e) {
-      await message.error(t('login:invalidLoginCredentials'))
+      await message.error(t('login:invalidLoginCredentials' + e))
     }
 
     setLoading(false)
@@ -54,12 +47,11 @@ const Index: NextPage = () => {
   return (
     <AuthLayout loading={loading}>
       <Omf />
-      {/* <EthProvider></EthProvider> */}
-      {/* <Form
-        form={form}
+      <Form
+        // form={form}
         name="login"
         onFinish={finish}
-        onFinishFailed={failed}
+        // onFinishFailed={failed}
         style={{
           margin: 'auto',
           maxWidth: '95%',
@@ -77,70 +69,18 @@ const Index: NextPage = () => {
         >
           <img
             style={{ maxWidth: '100%' }}
-            src={require('../../assets/images/logo_white.png?resize&size=256')}
-            alt={'OhMyForm'}
+            src={require('../../assets/images/logo.png?resize&size=256')}
+            alt={'Anonymous-Survey'}
           />
         </div>
 
-        {data && data.loginNote.value && (
-          <Alert
-            type="warning"
-            showIcon
-            message={t('login:note')}
-            description={<ReactMarkdown>{data.loginNote.value}</ReactMarkdown>}
-            style={{
-              marginBottom: 24,
-            }}
-          />
-        )}
-
-        <Form.Item
-          name="username"
-          rules={[{ required: true, message: t('validation:usernameRequired') }]}
-        >
-          <Input size="large" placeholder={t('login:usernamePlaceholder')} />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: t('validation:passwordRequired') }]}
-        >
-          <Input.Password size="large" placeholder={t('login:passwordPlaceholder')} />
-        </Form.Item>
-
         <Form.Item>
-          <Button size="large" type="primary" htmlType="submit" block>
+          <Button  size="large" type="primary" htmlType="submit" block>
             {t('login:loginNow')}
           </Button>
         </Form.Item>
 
-        <Button.Group className={scss.otherActions}>
-          {(!data || !data.disabledSignUp.value) && (
-            <Link href={'/register'}>
-              <Button
-                type={'link'}
-                ghost
-                style={{
-                  color: '#FFF',
-                }}
-              >
-                {t('register')}
-              </Button>
-            </Link>
-          )}
-          <Link href={'/login/recover'}>
-            <Button
-              type={'link'}
-              ghost
-              style={{
-                color: '#FFF',
-              }}
-            >
-              {t('recover')}
-            </Button>
-          </Link>
-        </Button.Group>
-      </Form> */}
+      </Form>
 
       <AuthFooter />
     </AuthLayout>

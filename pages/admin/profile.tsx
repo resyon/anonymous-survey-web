@@ -18,6 +18,7 @@ interface FormData {
     language: string
     firstName: string
     lastName: string
+    address: string
   }
   password: string
   confirm: string
@@ -38,23 +39,25 @@ const Profile: NextPage = () => {
     },
   })
 
-  const [update] = useProfileUpdateMutation()
+  // const [update] = useProfileUpdateMutation()
 
   const save = async (data: FormData) => {
     setSaving(true)
 
     try {
-      const next = (
-        await update({
-          variables: {
-            user: {
-              ...data.user,
-              password: data.password && data.password === data.confirm ? data.password : undefined,
-            },
-          },
-        })
-      ).data
+      // const next = (
+      //   await update({
+      //     variables: {
+      //       user: {
+      //         ...data.user,
+      //         password: data.password && data.password === data.confirm ? data.password : undefined,
+      //       },
+      //     },
+      //   })
+      // ).data
+      const {data} = JSON.parse(`{"data":{"form":{"id":"GVkRjB","email":"admin@local.host","username":"admin","language":"en","firstName":"new","lastName":"new","roles":["user","admin","superuser"],"created":"2023-03-13T07:48:14.000Z","lastModified":"2023-03-14T02:06:54.000Z","__typename":"Profile"}}}`);
 
+      const next = data;
       form.setFieldsValue(next)
 
       await message.success(t('profile:updated'))
